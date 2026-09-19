@@ -1,4 +1,4 @@
-```javascript
+
 const cityInput = document.querySelector("#city");
 const result = document.querySelector("#btn");
 const temprature = document.querySelector(".temp");
@@ -133,4 +133,4 @@ result.addEventListener("click", () => {
                 error.message;
         });
 });
-```
+
