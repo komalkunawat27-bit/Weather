@@ -25,7 +25,7 @@ result.addEventListener("click",()=>{
         const latitude=locationData.results[0].latitude;
         const longitude=locationData.results[0].longitude;
         // const rain=weatherData.hourly.precipitation_probability[0];
-        const WeatherApi= `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m&hourly=precipitation_probability&timezone=auto`;
+const WeatherApi = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m&hourly=precipitation_probability&timezone=auto](https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m&hourly=precipitation_probability&timezone=auto)`;
         return fetch(WeatherApi);
 
     }).then(responce=>responce.json())
