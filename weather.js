@@ -1,4 +1,4 @@
-
+```javascript
 const cityInput = document.querySelector("#city");
 const result = document.querySelector("#btn");
 const temprature = document.querySelector(".temp");
@@ -10,19 +10,29 @@ result.addEventListener("click", () => {
 
     const city = cityInput.value.trim();
 
-    if (city == "") {
+    // Check empty input
+    if (city === "") {
         message.textContent = "Please enter your city name";
         return;
     }
 
-    const locationURL = `https://geocoding-api.open-meteo.com/v1/search?name=${city}&count=1&language=en&format=json`;
+    // Find city's latitude and longitude
+    const locationURL =
+        `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=1&language=en&format=json`;
 
     fetch(locationURL)
-        .then(response => response.json())
+        .then(response => {
+
+            if (!response.ok) {
+                throw new Error("Could not connect to location service");
+            }
+
+            return response.json();
+        })
 
         .then(locationData => {
 
-            console.log(locationData);
+            console.log("Location data:", locationData);
 
             if (!locationData.results || locationData.results.length === 0) {
                 throw new Error("Cannot find city");
@@ -31,69 +41,96 @@ result.addEventListener("click", () => {
             const latitude = locationData.results[0].latitude;
             const longitude = locationData.results[0].longitude;
 
-            const WeatherApi = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m&hourly=precipitation_probability&timezone=auto`;
+            // Get weather
+            const weatherURL =
+                `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m&hourly=precipitation_probability&timezone=auto`;
 
-            return fetch(WeatherApi);
+            return fetch(weatherURL);
         })
 
-        .then(response => response.json())
+        .then(response => {
 
-        .then(WeatherData => {
+            if (!response.ok) {
+                throw new Error("Could not get weather data");
+            }
 
-            console.log(WeatherData);
+            return response.json();
+        })
 
-            const temp = WeatherData.current.temperature_2m;
+        .then(weatherData => {
 
-            let newtime = WeatherData.current.time;
+            console.log("Weather data:", weatherData);
 
-            const RainChance =
-                WeatherData.hourly.precipitation_probability[0];
+            if (weatherData.error) {
+                throw new Error(weatherData.reason || "Weather data unavailable");
+            }
 
-            newtime = new Date(WeatherData.current.time)
-                .toLocaleString();
+            const temp = weatherData.current.temperature_2m;
 
-            temprature.textContent = `Temperature : ${temp}°C`;
+            const newtime = new Date(
+                weatherData.current.time
+            ).toLocaleString();
 
-            time.textContent = `Date & Time : ${newtime}`;
+            const rainChance =
+                weatherData.hourly.precipitation_probability[0];
 
-            if (RainChance < 25) {
+            // Display temperature
+            temprature.textContent =
+                `Temperature : ${temp}°C`;
+
+            // Display date and time
+            time.textContent =
+                `Date & Time : ${newtime}`;
+
+            // Display rain chance
+            if (rainChance < 25) {
 
                 rainProb.textContent =
-                    `Rain chance : ${RainChance}% ☀️`;
+                    `Rain chance : ${rainChance}% ☀️`;
 
             }
-            else if (RainChance < 50) {
+            else if (rainChance < 50) {
 
                 rainProb.textContent =
-                    `Rain chance : ${RainChance}% 🌥️`;
+                    `Rain chance : ${rainChance}% 🌥️`;
 
             }
-            else if (RainChance < 75) {
+            else if (rainChance < 75) {
 
                 rainProb.textContent =
-                    `Rain chance : ${RainChance}% 🌦️`;
+                    `Rain chance : ${rainChance}% 🌦️`;
 
             }
-            else if (RainChance < 90) {
+            else if (rainChance < 90) {
 
                 rainProb.textContent =
-                    `Rain chance : ${RainChance}% 🌩️🌧️`;
+                    `Rain chance : ${rainChance}% 🌩️🌧️`;
 
             }
             else {
 
                 rainProb.textContent =
-                    `Rain chance : ${RainChance}% ⛈️🌩️🌧️`;
+                    `Rain chance : ${rainChance}% ⛈️🌩️🌧️`;
             }
+
+            // Clear error message after successful result
+            message.textContent = "";
+
         })
 
         .catch(error => {
 
             console.error(error);
 
-            temprature.textContent = "Unable to get temperature";
+            temprature.textContent =
+                "Unable to get temperature";
 
-            message.textContent = error.message;
+            time.textContent = "";
+
+            rainProb.textContent = "";
+
+            message.textContent =
+                error.message;
         });
 });
-
+```
