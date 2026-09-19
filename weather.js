@@ -36,9 +36,8 @@ result.addEventListener("click", () => {
             console.log("Latitude:", latitude);
             console.log("Longitude:", longitude);
 
-            const weatherURL =
-                `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m&hourly=precipitation_probability&timezone=auto`;
-
+const weatherURL =
+    `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m&hourly=precipitation_probability&timezone=Asia%2FKolkata`;
             console.log("Weather URL:", weatherURL);
 
             return fetch(weatherURL);
