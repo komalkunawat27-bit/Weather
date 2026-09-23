@@ -1,4 +1,3 @@
-
 const cityInput = document.querySelector("#city");
 const result = document.querySelector("#btn");
 const temprature = document.querySelector(".temp");
@@ -36,8 +35,9 @@ result.addEventListener("click", () => {
             console.log("Latitude:", latitude);
             console.log("Longitude:", longitude);
 
-const weatherURL =
-    `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m&hourly=precipitation_probability&timezone=Asia%2FKolkata`;
+            const weatherURL =
+                `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m&hourly=precipitation_probability&timezone=auto`;
+
             console.log("Weather URL:", weatherURL);
 
             return fetch(weatherURL);
@@ -56,21 +56,34 @@ const weatherURL =
 
             console.log("Weather:", weatherData);
 
+            // Temperature
             const temp =
                 weatherData.current.temperature_2m;
 
-            const newtime =
-                new Date(weatherData.current.time).toLocaleString();
+            // Current time from API
+            const currentTime =
+                weatherData.current.time;
 
+            // Get current hour
+            const currentHour =
+                Number(currentTime.split("T")[1].split(":")[0]);
+
+            // Get rain probability for current hour
             const rainChance =
-                weatherData.hourly.precipitation_probability[0];
+                weatherData.hourly.precipitation_probability[currentHour];
 
+            console.log("Current hour:", currentHour);
+            console.log("Rain chance:", rainChance);
+
+            // Display temperature
             temprature.textContent =
                 `Temperature : ${temp}°C`;
 
+            // Display time
             time.textContent =
-                `Date & Time : ${newtime}`;
+                `Date & Time : ${currentTime.replace("T", " ")}`;
 
+            // Display rain probability
             if (rainChance < 25) {
 
                 rainProb.textContent =
@@ -115,4 +128,3 @@ const weatherURL =
                 error.message;
         });
 });
-
